@@ -18,31 +18,27 @@ def before_request():
 @login_required
 def index():
     user = g.user
-    posts = [
-        { 
-            'author': {'nickname': 'John'}, 
-            'body': 'Beautiful day in Portland!'
-        },
-        { 
-            'author': {'nickname': 'Susan'}, 
-            'body': 'The Avengers movie was so cool!'
-        }
-    ]
+    posts = Post.query.all()
     return render_template('index.html',
                            title='Home',
                            user=user,
-                           posts=posts)
+                           posts=posts
+                           )
 
-# Testing section
-@app.route('/user/<nickname>')
+@app.route('/like', methods = ['GET', 'POST'])
 @login_required
-def user(nickname):
-    id = g.user.id
-    posts = Post.query.filter_by(id = id)
+def increment_like():
+    user = g.user
+    for i in db.session.query(Post):
+        i.amountlike = i.amountlike + 1
+    db.session.flush()
+    db.session.commit()
+    posts = Post.query.all()
     return render_template('index.html',
-                            post = posts
+                            user = user,
+                            posts = posts
                             )
-    
+
 
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
