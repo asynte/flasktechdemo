@@ -25,14 +25,15 @@ def index():
                            posts=posts
                            )
 
-@app.route('/like', methods = ['GET', 'POST'])
+@app.route('/likes/<id>', methods = ['GET', 'POST'])
 @login_required
-def increment_like():
+def increment_like(id):
     user = g.user
-    for i in db.session.query(Post):
-        i.amountlike = i.amountlike + 1
-    db.session.flush()
-    db.session.commit()
+    x = Post.query.filter_by(user_id = id).first()
+    if x:
+        x.amountlike = x.amountlike + 1
+        db.session.flush()
+        db.session.commit()
     posts = Post.query.all()
     return render_template('index.html',
                             user = user,
