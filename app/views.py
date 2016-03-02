@@ -38,9 +38,9 @@ def index():
 @login_required
 def user(nickname):
     id = g.user.id
-    post = Post.query.filter_by(id = id)
+    posts = Post.query.filter_by(id = id)
     return render_template('index.html',
-                            post = post
+                            post = posts
                             )
     
 
