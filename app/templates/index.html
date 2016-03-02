@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Hi, {{ user.nickname }}!</h1>
+    <h1>Hi, !</h1>
+    <p> {{ post.id }}</p>
+    <p> {{ post.body }}</p>
+
     {% for post in posts %}
-    <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p></div>
+    <div><p>{{ post.author.nickname }} says: <b>{{ post.body }}</b></p>
+    <form action = "/like" method = "post">
+    	<button type = "submit" value = "Like">Like</button>
+    </form>
+	</div>
+
     {% endfor %}
 {% endblock %}
