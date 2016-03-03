@@ -7,7 +7,7 @@ from .models import User
 
 class LoginForm(Form):
 
-    userID = TextField("Nickname",  [validators.Required("Please enter a nickname.")])
+    email = TextField("Email",  [validators.Required("Please enter your email.")])
     password = PasswordField('Password', [validators.Required("Please enter a password.")])
     submit = SubmitField("Sign In")
 
@@ -18,13 +18,13 @@ class LoginForm(Form):
         if not Form.validate(self):
           return False
          
-        user = User.query.filter_by(userID = self.userID.data).first()
-
+        user = User.query.filter_by(email = self.email.data).first()
+    
         if user and user.check_password(self.password.data):
           login_user(user, True)
           return True
         else:
-          self.userID.errors.append("Invalid user ID or password")
+          self.email.errors.append("Invalid email or password")
           return False
 
 class RegistrationForm(Form):

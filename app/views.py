@@ -50,7 +50,7 @@ def login():
         if form.validate() == False:
           return render_template('login.html', form=form)
         else:
-          session['userID'] = form.userID.data      
+          session['email'] = form.email.data
           return redirect(url_for('index'))
                  
     elif request.method == 'GET':
