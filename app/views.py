@@ -1,7 +1,8 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
-from flask.ext.login import login_user, logout_user, current_user, login_required
-from app import app, db, lm, oid
-from .forms import LoginForm
+from flask.ext.login import UserMixin, login_user, logout_user, current_user, login_required
+from oauth import OAuthSignIn
+from app import app, db, lm
+from .forms import LoginForm, RegistrationForm
 from .models import User
 
 @lm.user_loader
@@ -33,20 +34,36 @@ def index():
                            posts=posts)
 
 @app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
 def login():
-    if g.user is not None and g.user.is_authenticated:
-        return redirect(url_for('index'))
     form = LoginForm()
-    if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
-    return render_template('login.html', 
-                           title='Sign In',
-                           form=form,
-                           providers=app.config['OPENID_PROVIDERS'])
+    if request.method == 'POST':
+        if form.validate() == False:
+          return render_template('login.html', form=form)
+        else:
+          session['userID'] = form.userID.data      
+          return redirect(url_for('index'))
+                 
+    elif request.method == 'GET':
+        return render_template('login.html', form=form)     
 
-@oid.after_login
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegistrationForm();
+
+    if request.method == 'POST':
+        if form.validate() == False:
+            return render_template('register.html', form=form)
+        else:
+            newuser = User(" ", form.userID.data, form.email.data, form.password.data)
+            db.session.add(newuser)
+            db.session.commit()
+            login_user(newuser, False)          
+            return redirect(request.args.get('next') or url_for('index'))
+        
+    elif request.method == 'GET':
+        return render_template('register.html', form=form)
+
+'''
 def after_login(resp):
     if resp.email is None or resp.email == "":
         flash('Invalid login. Please try again.')
@@ -65,8 +82,36 @@ def after_login(resp):
         session.pop('remember_me', None)
     login_user(user, remember = remember_me)
     return redirect(request.args.get('next') or url_for('index'))
+'''
 
 @app.route('/logout')
 def logout():
     logout_user()
+    return redirect(url_for('login'))
+
+#OAuth stuff start
+
+@app.route('/authorize/<provider>')
+def oauth_authorize(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    return oauth.authorize()
+
+
+@app.route('/callback/<provider>')
+def oauth_callback(provider):
+    if not current_user.is_anonymous:
+        return redirect(url_for('index'))
+    oauth = OAuthSignIn.get_provider(provider)
+    social_id, username, email = oauth.callback()
+    if social_id is None:
+        flash('Authentication failed.')
+        return redirect(url_for('index'))
+    user = User.query.filter_by(social_id=social_id).first()
+    if not user:
+        user = User(social_id=social_id, userID=username, email=email, password = None)
+        db.session.add(user)
+        db.session.commit()
+    login_user(user, True)
     return redirect(url_for('index'))

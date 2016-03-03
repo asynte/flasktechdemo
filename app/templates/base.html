@@ -1,14 +1,14 @@
 <html>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/base.css') }}">
   <head>
     {% if title %}
-    <title>{{ title }} - microblog</title>
+    <title>{{ title }} - Tweeter</title>
     {% else %}
-    <title>microblog</title>
+    <title>Tweeter</title>
     {% endif %}
   </head>
   <body>
-    <div>Microblog:
-        <a href="{{ url_for('index') }}">Home</a>
+    <div>Tweeter
         {% if g.user.is_authenticated %}
         | <a href="{{ url_for('logout') }}">Logout</a>
         {% endif %}

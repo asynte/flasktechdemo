@@ -1,10 +1,31 @@
 from app import db
+from flask.ext.login import LoginManager, UserMixin
+from werkzeug import generate_password_hash, check_password_hash
 
-class User(db.Model):
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    nickname = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
+    social_id = db.Column(db.String(64), nullable=False) #could have duplicate
+    userID = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(64), nullable=True)
+    pwdhash = db.Column(db.String(54), nullable=True)  
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+
+    def __init__(self, social_id, userID, email, password):
+        if social_id:
+            self.social_id = social_id #not required if not using Facebook login
+        if userID:
+            self.userID = userID
+        self.email = email.lower()
+        if password:
+            self.set_password(password)
+            assert self.check_password(password)
+        
+    def set_password(self, password):
+        self.pwdhash = generate_password_hash(password)
+   
+    def check_password(self, password):
+        return check_password_hash(self.pwdhash, password)
 
     @property
     def is_authenticated(self):
@@ -25,13 +46,13 @@ class User(db.Model):
             return str(self.id)  # python 3
 
     def __repr__(self):
-        return '<User %r>' % (self.nickname)
+        return '<User %r>' % (self.userID)
 
-class Post(db.Model):
+class Post(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key = True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):
         return '<Post %r>' % (self.body)
