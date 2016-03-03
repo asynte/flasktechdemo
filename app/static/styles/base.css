@@ -13,7 +13,8 @@ a.button {
 
 form input#userID,
 form input#email,
-form input#password {
+form input#password,
+form input#confirm {
   width: 300px;
   background-color: #fafafa;
   -webkit-border-radius: 3px;
@@ -24,6 +25,6 @@ form input#password {
   font-size: 1.1em;
 }
  
-form input#password {
+form input#confirm {
   margin-bottom: 1em;
 }

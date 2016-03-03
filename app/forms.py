@@ -7,10 +7,8 @@ from .models import User
 
 class LoginForm(Form):
 
-    userID = TextField("User ID",  [validators.Required("Please enter a UserID.")],
-                       default = "userID")
-    password = StringField('Password', [validators.Required("Please enter a password.")],
-                             default = "password")
+    userID = TextField("Nickname",  [validators.Required("Please enter a nickname.")])
+    password = PasswordField('Password', [validators.Required("Please enter a password.")])
     submit = SubmitField("Sign In")
 
     def __init__(self, *args, **kwargs):
@@ -30,13 +28,14 @@ class LoginForm(Form):
           return False
 
 class RegistrationForm(Form):
-    userID = StringField('User ID', [validators.Required("Please enter a user ID.")],
-                         default = "userID")
+    userID = StringField('Nickname', [validators.Required("Please enter a nickname.")])
     email = TextField("Email",  [validators.Required("Please enter your email address."),
-                                 validators.Email("Please enter your email address.")],
-                      default = "email")
-    password = StringField('Password', [validators.Required("Please enter a password.")],
-                           default = "password")
+                                 validators.Email("Please enter your email address.")])
+    password = PasswordField('Password', [
+        validators.Required("Please enter a password."),
+        validators.EqualTo('confirm', message='Passwords must match')
+    ])
+    confirm = PasswordField('Confirm Password')
     submit = SubmitField("Create account")
  
     def __init__(self, *args, **kwargs):
