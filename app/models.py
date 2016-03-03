@@ -54,6 +54,7 @@ class Post(UserMixin, db.Model):
     timestamp = db.Column(db.DateTime)
     amountlike= db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    name = db.Column(db.String(64))
 
     def __repr__(self):
         return '<Post %r>' % (self.body)

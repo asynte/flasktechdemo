@@ -4,10 +4,10 @@
 
     {% for post in posts %}
     <div>
-    	<p>{{ post.author.userID }} says: <b>{{ post.body }}</b>
+    	<p>{{ post.name }} says: <b>{{ post.body }}</b>
     		Likes: {{ post.amountlike }}
    		</p>
-    <form action = "/likes/{{post.author.id}}" method = "post">
+    <form action = "/likes/{{post.id}}" method = "post">
     	<button type = "submit" value = "Like">Like</button>
     </form>
 	</div>
