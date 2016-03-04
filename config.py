@@ -14,9 +14,5 @@ OAUTH_CREDENTIALS = {
     'facebook': {
         'id': '971528449593075',
         'secret': '84b182f7d6adb469ca1f3d81ea723253'
-    },
-    'twitter': {
-        'id': '3RzWQclolxWZIMq5LJqzRZPTl',
-        'secret': 'm9TEd58DSEtRrZHpz2EjrV9AhsBRxKMo8m3kuIZj3zLwzwIimt'
     }
 }
